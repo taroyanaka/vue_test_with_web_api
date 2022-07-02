@@ -1,4 +1,5 @@
 <template>
+<button @click="fetch_data">fetch_data</button>
 <h1>{{ foo_data }}</h1>
 </template>
 
@@ -13,13 +14,22 @@
 // fetch with validation test
 
 // fetch with authentication and validation test
+const SERVER_URL = 'http://localhost:8800';
+let tmp, tmp2;
 
 export default {
     data() {
         return {
             foo_data: 'FOO123'
         }
-    }
+    },
+    methods: {
+        async fetch_data() {
+            tmp = await fetch(SERVER_URL);
+            tmp2 = await tmp.json();
+            this.foo_data = await tmp2["id"];
+        }
+    },
 }
 
 </script>
