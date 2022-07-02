@@ -5,7 +5,9 @@
 
 <script>
 // local node.js express.js server setup (with hot reloading)
+// => ☑️
 // server side fetch test
+// => ☑️
 
 // sqlite3 database setup
 // fetch with sqlite3(better-sqlite3)
