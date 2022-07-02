@@ -14,8 +14,15 @@
 // fetch with validation test
 
 // fetch with authentication and validation test
-const SERVER_URL = 'http://localhost:8800';
+
+let SERVER_URL = '';
+// SERVER_URL = 'http://localhost:8800';
+SERVER_URL = "https://marred-mint-art.glitch.me";
 let tmp, tmp2;
+
+// let tmp = await fetch("https://marred-mint-art.glitch.me");
+// let tmp2 = await tmp.json();
+// await console.log(tmp2);
 
 export default {
     data() {
@@ -23,10 +30,18 @@ export default {
             foo_data: 'FOO123'
         }
     },
+    // async created (){
+    //     tmp = await fetch("https://marred-mint-art.glitch.me");
+    //     tmp2 = await tmp.json();
+    //     await console.log(tmp2);
+    //     return await tmp2;
+    // },
     methods: {
         async fetch_data() {
-            tmp = await fetch(SERVER_URL);
-            tmp2 = await tmp.json();
+            let tmp = await fetch(SERVER_URL);
+            // let tmp = await fetch("https://marred-mint-art.glitch.me");
+            let tmp2 = await tmp.json();
+            console.log(tmp2);
             this.foo_data = await tmp2["id"];
         }
     },
