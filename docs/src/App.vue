@@ -1,12 +1,16 @@
 <template>
 <button @click="fetch_data">fetch_data</button>
+<input type="number" v-model="id">
 <input type="text" v-model="info">
 <button @click="insert">insert</button>
 <button @click="readall">readall</button>
 <h1>{{ foo_data }}</h1>
 
 <ul v-for="item in db_list">
-  <li>{{ item.id }}: {{ item.info }}</li>
+    <li class="deleteid">{{ item.id }}:</li>
+    <input type="text" class="deleteid info" v-model="item.info">
+    <button class="update" @click="update(item.id, item.info)">update</button>
+    <button class="deleteid" @click="deleteid(item.id)">deleteid</button>
 </ul>
 
 <h1>{{ db_log }}</h1>
@@ -39,6 +43,7 @@ export default {
     data() {
         return {
             foo_data: 'FOO123',
+            id: 0,
             info: '',
             db_list: null,
             db_log: ''
@@ -62,12 +67,28 @@ export default {
             tmp2 = await tmp.json();
             console.table(tmp2);
             this.db_log = await tmp2["data"];
+            this.db_list = await tmp2["data"];
+        },
+        async deleteid(ID) {
+            tmp = await fetch(SERVER_URL + "/deleteid?id=" + ID);
+            tmp2 = await tmp.json();
+            console.table(tmp2);
+            this.db_log = await tmp2["data"];
+            this.db_list = await tmp2["data"];
+        },
+        async update(ID, INFO) {
+            tmp = await fetch(SERVER_URL + "/update?id=" + ID + "&info=" + INFO);
+            tmp2 = await tmp.json();
+            console.table(tmp2);
+            this.db_log = await tmp2["data"];
+            this.db_list = await tmp2["data"];
         },
         async readall() {
             tmp = await fetch(SERVER_URL + "/readall");
             tmp2 = await tmp.json();
             console.table(tmp2);
             this.db_log = await tmp2["data"];
+            this.db_list = await tmp2["data"];
         },
     },
 }
@@ -76,5 +97,8 @@ export default {
 
 <style>
 #app {
+}
+.deleteid {
+  display: inline-block; /* the default for span */
 }
 </style>
