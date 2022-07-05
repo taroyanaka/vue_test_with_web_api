@@ -26,10 +26,19 @@
 // fetch with sqlite3(better-sqlite3)
 // => ☑️
 
-// fetch with authentication test
 // fetch with validation test
+// fetch with authentication test
 
 // fetch with authentication and validation test
+
+
+// before hack, change ALLOW ORIGIN on glitch.com server.js for http://localhost
+// function allowOrigin(res){
+// ===>   res.header("Access-Control-Allow-Origin", "https://taroyanaka.github.io");
+// ===>   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");  
+// }
+
 
 let SERVER_URL = '';
 // SERVER_URL = 'http://localhost:8800';
