@@ -31,6 +31,12 @@
 
 // fetch with authentication and validation test
 
+// should I do CSRF protection?
+// https://garafu.blogspot.com/2017/04/nodejs-express-csrfprotection.html
+
+
+
+
 
 // before hack, change ALLOW ORIGIN on glitch.com server.js for http://localhost
 // function allowOrigin(res){
@@ -92,6 +98,6 @@ export default {
 #app {
 }
 .deleteid {
-  display: inline-block; /* the default for span */
+  display: inline-block;
 }
 </style>
