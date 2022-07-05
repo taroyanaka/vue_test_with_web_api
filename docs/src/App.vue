@@ -22,7 +22,9 @@
 // => ☑️
 
 // sqlite3 database setup
+// => ☑️
 // fetch with sqlite3(better-sqlite3)
+// => ☑️
 
 // fetch with authentication test
 // fetch with validation test
