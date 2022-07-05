@@ -1,6 +1,5 @@
 <template>
 <button @click="fetch_data">fetch_data</button>
-<input type="number" v-model="id">
 <input type="text" v-model="info">
 <button @click="insert">insert</button>
 <button @click="readall">readall</button>
@@ -43,7 +42,6 @@ export default {
     data() {
         return {
             foo_data: 'FOO123',
-            id: 0,
             info: '',
             db_list: null,
             db_log: ''
