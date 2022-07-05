@@ -1,6 +1,7 @@
 <template>
+<span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
-<input type="text" v-model="info">
+<input type="text" @input="valid_info($event)" v-model="info">
 <button @click="insert">insert</button>
 <button @click="readall">readall</button>
 <h1>{{ foo_data }}</h1>
@@ -37,6 +38,11 @@
 
 
 
+// validator.isLength(str [, options])
+// validator.isLength(str {min:0, max: undefined})
+// validator.isLength(str {min:0, max: 2})
+// options is an object which defaults to {min:0, max: undefined}. Note: this function takes into account surrogate pairs.
+
 
 // before hack, change ALLOW ORIGIN on glitch.com server.js for http://localhost
 // function allowOrigin(res){
@@ -57,10 +63,16 @@ export default {
             foo_data: 'FOO123',
             info: '',
             db_list: null,
-            db_log: ''
+            db_log: '',
+            error_log: '',
         }
     },
     methods: {
+        valid_info(event){
+            console.table(validator.isLength(event.target.value, {min:0, max: 2}));
+            // console.table(event.target.value);
+            this.error_log = validator.isLength(event.target.value, {min:0, max: 2}) ? "" : "error: isLength {min:0, max: 2}";
+        },
         async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
             const FETCH_DATA = await fetch(FETCH_PARAM);
             const JSON_DATA = await FETCH_DATA.json();
