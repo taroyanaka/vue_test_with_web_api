@@ -54,39 +54,55 @@ export default {
     //     return await tmp2;
     // },
     methods: {
+        async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
+            const FETCH_DATA = await fetch(FETCH_PARAM);
+            const JSON_DATA = await FETCH_DATA.json();
+            console.table(JSON_DATA);
+            // https://stackoverflow.com/a/37576787
+            for (const DATA_KEY of DATA_KEY_ARRAY) {
+                this[DATA_KEY] = JSON_DATA[KEY];
+            }
+        },
         async fetch_data() {
-            tmp = await fetch(SERVER_URL);
-            tmp2 = await tmp.json();
-            console.log(tmp2);
-            this.foo_data = await tmp2["id"];
+            // tmp = await fetch(SERVER_URL);
+            // tmp2 = await tmp.json();
+            // console.log(tmp2);
+            // this.foo_data = await tmp2["id"];
+            await this.async_await_fetch_json_log_assign(SERVER_URL, ["foo_data"], "id");
         },
         async insert() {
-            tmp = await fetch(SERVER_URL + "/insert?info=" + this.info);
-            tmp2 = await tmp.json();
-            console.table(tmp2);
-            this.db_log = await tmp2["data"];
-            this.db_list = await tmp2["data"];
+            // tmp = await fetch(SERVER_URL + "/insert?info=" + this.info);
+            // tmp2 = await tmp.json();
+            // console.table(tmp2);
+            // this.db_log = await tmp2["data"];
+            // this.db_list = await tmp2["data"];
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.info), ["db_log", "db_list"], "data");
         },
         async deleteid(ID) {
             tmp = await fetch(SERVER_URL + "/deleteid?id=" + ID);
-            tmp2 = await tmp.json();
-            console.table(tmp2);
-            this.db_log = await tmp2["data"];
-            this.db_list = await tmp2["data"];
+            // tmp2 = await tmp.json();
+            // console.table(tmp2);
+            // this.db_log = await tmp2["data"];
+            // this.db_list = await tmp2["data"];
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/deleteid?id=" + ID), ["db_log", "db_list"], "data");
         },
         async update(ID, INFO) {
-            tmp = await fetch(SERVER_URL + "/update?id=" + ID + "&info=" + INFO);
-            tmp2 = await tmp.json();
-            console.table(tmp2);
-            this.db_log = await tmp2["data"];
-            this.db_list = await tmp2["data"];
+            // tmp = await fetch(SERVER_URL + "/update?id=" + ID + "&info=" + INFO);
+            // tmp2 = await tmp.json();
+            // console.table(tmp2);
+            // this.db_log = await tmp2["data"];
+            // this.db_list = await tmp2["data"];
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/update?id=" + ID + "&info=" + INFO), ["db_log", "db_list"], "data");
         },
         async readall() {
-            tmp = await fetch(SERVER_URL + "/readall");
-            tmp2 = await tmp.json();
-            console.table(tmp2);
-            this.db_log = await tmp2["data"];
-            this.db_list = await tmp2["data"];
+            // tmp = await fetch(SERVER_URL + "/readall");
+            // tmp2 = await tmp.json();
+            // console.table(tmp2);
+            // this.db_log = await tmp2["data"];
+            // this.db_list = await tmp2["data"];
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "db_list"], "data");
+            // await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "foo_data"], "data");
+            // await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_list"], "data");
         },
     },
 }
