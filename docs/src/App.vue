@@ -81,7 +81,7 @@ export default {
             await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.info), ["db_log", "db_list"], "data");
         },
         async deleteid(ID) {
-            tmp = await fetch(SERVER_URL + "/deleteid?id=" + ID);
+            // tmp = await fetch(SERVER_URL + "/deleteid?id=" + ID);
             // tmp2 = await tmp.json();
             // console.table(tmp2);
             // this.db_log = await tmp2["data"];
