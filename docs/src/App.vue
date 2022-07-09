@@ -1,7 +1,8 @@
 <template>
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
-<input type="text" @input="valid_info($event)" v-model="info">
+<!-- <input type="text" @input="valid_info($event)" v-model="info"> -->
+<input type="text" v-model="info" required="required">
 <button @click="insert">insert</button>
 <button @click="readall">readall</button>
 <h1>{{ foo_data }}</h1>
@@ -28,6 +29,8 @@
 // => ☑️
 
 // fetch with validation test
+    // => client-side use only HTML form validation https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+    // => server-side use validatior.js https://github.com/validatorjs/validator.js/
 // fetch with authentication test
 
 // fetch with authentication and validation test
@@ -53,8 +56,8 @@
 
 
 let SERVER_URL = '';
-// SERVER_URL = 'http://localhost:8800';
-SERVER_URL = "https://marred-mint-art.glitch.me";
+SERVER_URL = 'http://localhost:8800';
+// SERVER_URL = "https://marred-mint-art.glitch.me";
 let tmp, tmp2;
 
 export default {
@@ -67,16 +70,31 @@ export default {
             error_log: '',
         }
     },
+    // beforeMount(){
+    // updated(){
+    // beforeUpdate(){
+    //     this.check_all_validation();
+    // },
     methods: {
-        valid_info(event){
-            console.table(validator.isLength(event.target.value, {min:0, max: 2}));
-            // console.table(event.target.value);
-            this.error_log = validator.isLength(event.target.value, {min:0, max: 2}) ? "" : "error: isLength {min:0, max: 2}";
-        },
+        // check_all_validation(){
+        //     try {
+        //         // https://stackoverflow.com/a/9370654
+        //          this.info = validator.isLength(this.info, {min: 1, max: 3}) ? this.info : (function(){throw "error"}());
+        //         // throw new Error("foo");
+        //         // validator.isLength(this.info, {min: 1, max: 3}) ? "null" : throw new Error("error: isLength {min: 1, max: 3}");
+        //     } catch (error) {
+        //         // this.error_log = error
+        //         console.error(error);
+        //     }
+        // },
+        // valid_info(){
+        //     this.info = validator.isLength(this.info, {min: 1, max: 3}) ? this.info : "error: isLength {min: 1, max: 3}";
+        // },
         async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
             const FETCH_DATA = await fetch(FETCH_PARAM);
             const JSON_DATA = await FETCH_DATA.json();
             console.table(JSON_DATA);
+            if (JSON_DATA.message !== "success") return
             // https://stackoverflow.com/a/37576787
             for (const DATA_KEY of DATA_KEY_ARRAY) {
                 this[DATA_KEY] = JSON_DATA[KEY];
@@ -91,6 +109,7 @@ export default {
         },
         async insert() {
             await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.info), ["db_log", "db_list"], "data");
+            // await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.check_all_validation()), ["db_log", "db_list"], "data");
         },
         async deleteid(ID) {
             await this.async_await_fetch_json_log_assign((SERVER_URL + "/deleteid?id=" + ID), ["db_log", "db_list"], "data");
