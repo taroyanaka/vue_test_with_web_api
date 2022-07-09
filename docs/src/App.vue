@@ -56,8 +56,8 @@
 
 
 let SERVER_URL = '';
-SERVER_URL = 'http://localhost:8800';
-// SERVER_URL = "https://marred-mint-art.glitch.me";
+// SERVER_URL = 'http://localhost:8800';
+SERVER_URL = "https://marred-mint-art.glitch.me";
 let tmp, tmp2;
 
 export default {
