@@ -1,16 +1,19 @@
 <template>
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
-<!-- <input type="text" @input="valid_info($event)" v-model="info"> -->
-<input type="text" v-model="info" required="required" minlength="1" maxlength="30">
-<button @click="insert">insert</button>
+
+<input class="insert" type="text" v-model="info" minlength="1" maxlength="30" required>
+
+<button @click="insert" :class="{ insert_button_class_for_initial_display_none: true, insert_invalid: this.insert_validation_check()  }">insert</button>
 <button @click="readall">readall</button>
+
 <h1>{{ foo_data }}</h1>
 
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
-    <input type="text" class="deleteid info" v-model="item.info"  required="required" minlength="1" maxlength="30">
-    <button class="update" @click="update(item.id, item.info)">update</button>
+    <input type="text" v-model="item.info" :class="{ update: true, deleteid: true, info: true}" minlength="1" maxlength="30" required>
+
+    <button @click="update(item.id, item.info)" :class="{ update_invalid: this.update_validation_check() ? true : false }">update</button>
     <button class="deleteid" @click="deleteid(item.id)">deleteid</button>
 </ul>
 
@@ -30,7 +33,9 @@
 
 // fetch with validation test
     // => client-side use only HTML form validation https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+    // => ☑️
     // => server-side use validatior.js https://github.com/validatorjs/validator.js/
+    // => ☑️
 // fetch with authentication test
 
 // fetch with authentication and validation test
@@ -68,28 +73,20 @@ export default {
             db_list: null,
             db_log: '',
             error_log: '',
+insert_validation_data: true,
+            // validation_result: '',
         }
     },
     // beforeMount(){
     // updated(){
-    // beforeUpdate(){
-    //     this.check_all_validation();
-    // },
+    mounted(){
+        document.querySelector(".insert_button_class_for_initial_display_none").style = 'display: none;'
+    },
+    beforeUpdate(){
+        document.querySelector(".insert_button_class_for_initial_display_none").style = ''
+
+    },
     methods: {
-        // check_all_validation(){
-        //     try {
-        //         // https://stackoverflow.com/a/9370654
-        //          this.info = validator.isLength(this.info, {min: 1, max: 3}) ? this.info : (function(){throw "error"}());
-        //         // throw new Error("foo");
-        //         // validator.isLength(this.info, {min: 1, max: 3}) ? "null" : throw new Error("error: isLength {min: 1, max: 3}");
-        //     } catch (error) {
-        //         // this.error_log = error
-        //         console.error(error);
-        //     }
-        // },
-        // valid_info(){
-        //     this.info = validator.isLength(this.info, {min: 1, max: 3}) ? this.info : "error: isLength {min: 1, max: 3}";
-        // },
         async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
             const FETCH_DATA = await fetch(FETCH_PARAM);
             const JSON_DATA = await FETCH_DATA.json();
@@ -120,6 +117,12 @@ export default {
         async readall() {
             await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "db_list"], "data");
         },
+    insert_validation_check(){
+        return Array.from(document.querySelectorAll("input.insert")).map(V=>V.validity.valid).some(x=> x === false )
+    },
+    update_validation_check(){
+        return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
+    },
     },
 }
 
@@ -130,5 +133,11 @@ export default {
 }
 .deleteid {
   display: inline-block;
+}
+.insert_invalid {
+    display: none;
+}
+.update_invalid {
+    display: none;
 }
 </style>
