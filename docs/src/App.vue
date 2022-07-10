@@ -37,6 +37,8 @@
     // => server-side use validatior.js https://github.com/validatorjs/validator.js/
     // => ☑️
 // fetch with authentication test
+    // => uid from firebase authentication
+        // => https://gist.github.com/taroyanaka/1275ccf0f7adc549fcf01cdb19f2afd6
 
 // fetch with authentication and validation test
 
