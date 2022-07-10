@@ -2,14 +2,14 @@
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
 <!-- <input type="text" @input="valid_info($event)" v-model="info"> -->
-<input type="text" v-model="info" required="required">
+<input type="text" v-model="info" required="required" minlength="1" maxlength="3">
 <button @click="insert">insert</button>
 <button @click="readall">readall</button>
 <h1>{{ foo_data }}</h1>
 
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
-    <input type="text" class="deleteid info" v-model="item.info">
+    <input type="text" class="deleteid info" v-model="item.info"  required="required" minlength="1" maxlength="30">
     <button class="update" @click="update(item.id, item.info)">update</button>
     <button class="deleteid" @click="deleteid(item.id)">deleteid</button>
 </ul>
