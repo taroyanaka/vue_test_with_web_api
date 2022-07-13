@@ -1,4 +1,13 @@
 <template>
+<h2 class="loginrResult"></h2>
+<button @click="checkLogin">checkLogin</button>
+
+<input type="button" name="" class="login" value="googleLogin" onclick="googleLogin();"> => google is localhost OK github pages OK
+<input type="button" name="" class="login" value="githubLogin" onclick="githubLogin();"> => github is localhost OK github pages NG
+<input type="button" name="" class="login" value="twitterLogin" onclick="twitterLogin();"> => twitter is localhost OK github pages OK
+<input type="button" name="" class="login" value="facebookLogin" onclick="facebookLogin();"> => facebook is localhost OK github pages NG
+<input type="button" name="" class="logout" value="logout" onclick="signOut();">
+
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
 
@@ -62,9 +71,86 @@
 // }
 
 
+// https://taroyanaka.github.io/javascript/HTML/p2.html
+const firebaseConfig = {
+    apiKey: "AIzaSyBcOlIDP2KWbJuKM0WeMHNp-WvjTVfLt9Y",
+    authDomain: "p2auth-ea50a.firebaseapp.com",
+    projectId: "p2auth-ea50a",
+    storageBucket: "p2auth-ea50a.appspot.com",
+    messagingSenderId: "796225429484",
+    appId: "1:796225429484:web:ece56ef2fc0be28cd6eac9"
+};
+
+firebase.initializeApp(firebaseConfig);
+const google = new firebase.auth.GoogleAuthProvider();
+const github = new firebase.auth.GithubAuthProvider();
+const twitter = new firebase.auth.TwitterAuthProvider();
+const facebook = new firebase.auth.FacebookAuthProvider();
+
+
+function checkLogin() {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            document.querySelector(".loginrResult").innerText = "login success";
+            document.querySelectorAll(".login").forEach(V=>V.style = "display:none")
+            document.querySelector(".logout").style = "display:inline";
+        } else {
+            document.querySelector(".loginrResult").innerText = "not login yet";
+            document.querySelector(".logout").style = "display:none";
+            document.querySelectorAll(".login").forEach(V=>V.style = "display:inline")
+        }
+    })
+}
+
+function googleLogin() {
+    firebase.auth().signInWithRedirect(google);
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+}
+function twitterLogin() {
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+    // https://qiita.com/sl2/items/2815e62aaf2baea2f589
+    firebase.auth().signInWithRedirect(twitter);
+}
+function facebookLogin() {
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+    // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
+    firebase.auth().signInWithRedirect(facebook);
+}
+function githubLogin() {
+    firebase.auth().signInWithRedirect(github);
+}
+
+function timer(str) {
+    document.querySelector(".loginrResult").innerText = str;
+    tmp = setTimeout(timerFunc, 3000);
+}
+function timerFunc() {
+    document.querySelector(".loginrResult").innerText = "";
+}
+
+// firebase.auth().languageCode = 'ja';
+// window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sign-in-button', {
+//         'size': 'invisible',
+//         'callback': (response) => {
+//             // reCAPTCHA solved, allow signInWithPhoneNumber.
+//             onSignInSubmit();
+//         }
+//     });
+// window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+
+function signOut() {
+    firebase.auth().signOut().then(() => {
+        console.log(`Sign-out successful`);
+    }).catch((error) => {
+        console.log(`Sign-out error`);
+    });
+}
+// firebase.auth().currentUser.uid
+
 let SERVER_URL = '';
-// SERVER_URL = 'http://localhost:8800';
-SERVER_URL = "https://marred-mint-art.glitch.me";
+SERVER_URL = 'http://localhost:8800';
+// SERVER_URL = "https://marred-mint-art.glitch.me";
 let tmp, tmp2;
 
 export default {
@@ -75,7 +161,7 @@ export default {
             db_list: null,
             db_log: '',
             error_log: '',
-insert_validation_data: true,
+// insert_validation_data: true,
             // validation_result: '',
         }
     },
