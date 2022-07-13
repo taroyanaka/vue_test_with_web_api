@@ -2,11 +2,11 @@
 <h2 class="loginrResult"></h2>
 <button @click="checkLogin">checkLogin</button>
 
-<input type="button" name="" class="login" value="googleLogin" onclick="googleLogin();"> => google is localhost OK github pages OK
-<input type="button" name="" class="login" value="githubLogin" onclick="githubLogin();"> => github is localhost OK github pages NG
-<input type="button" name="" class="login" value="twitterLogin" onclick="twitterLogin();"> => twitter is localhost OK github pages OK
-<input type="button" name="" class="login" value="facebookLogin" onclick="facebookLogin();"> => facebook is localhost OK github pages NG
-<input type="button" name="" class="logout" value="logout" onclick="signOut();">
+<input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK
+<input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG
+<input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK
+<input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG
+<input type="button" name="" class="logout" value="logout" @click="signOut">
 
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
@@ -88,45 +88,8 @@ const twitter = new firebase.auth.TwitterAuthProvider();
 const facebook = new firebase.auth.FacebookAuthProvider();
 
 
-function checkLogin() {
-    firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            document.querySelector(".loginrResult").innerText = "login success";
-            document.querySelectorAll(".login").forEach(V=>V.style = "display:none")
-            document.querySelector(".logout").style = "display:inline";
-        } else {
-            document.querySelector(".loginrResult").innerText = "not login yet";
-            document.querySelector(".logout").style = "display:none";
-            document.querySelectorAll(".login").forEach(V=>V.style = "display:inline")
-        }
-    })
-}
 
-function googleLogin() {
-    firebase.auth().signInWithRedirect(google);
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
-}
-function twitterLogin() {
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
-    // https://qiita.com/sl2/items/2815e62aaf2baea2f589
-    firebase.auth().signInWithRedirect(twitter);
-}
-function facebookLogin() {
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
-    // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-    firebase.auth().signInWithRedirect(facebook);
-}
-function githubLogin() {
-    firebase.auth().signInWithRedirect(github);
-}
 
-function timer(str) {
-    document.querySelector(".loginrResult").innerText = str;
-    tmp = setTimeout(timerFunc, 3000);
-}
-function timerFunc() {
-    document.querySelector(".loginrResult").innerText = "";
-}
 
 // firebase.auth().languageCode = 'ja';
 // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sign-in-button', {
@@ -139,14 +102,6 @@ function timerFunc() {
 // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
 
 
-function signOut() {
-    firebase.auth().signOut().then(() => {
-        console.log(`Sign-out successful`);
-    }).catch((error) => {
-        console.log(`Sign-out error`);
-    });
-}
-// firebase.auth().currentUser.uid
 
 let SERVER_URL = '';
 SERVER_URL = 'http://localhost:8800';
@@ -211,6 +166,57 @@ export default {
     update_validation_check(){
         return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
     },
+
+checkLogin() {
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            document.querySelector(".loginrResult").innerText = "login success";
+            document.querySelectorAll(".login").forEach(V=>V.style = "display:none")
+            document.querySelector(".logout").style = "display:inline";
+        } else {
+            document.querySelector(".loginrResult").innerText = "not login yet";
+            document.querySelector(".logout").style = "display:none";
+            document.querySelectorAll(".login").forEach(V=>V.style = "display:inline")
+        }
+    })
+},
+
+googleLogin() {
+    firebase.auth().signInWithRedirect(google);
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+},
+twitterLogin() {
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+    // https://qiita.com/sl2/items/2815e62aaf2baea2f589
+    firebase.auth().signInWithRedirect(twitter);
+},
+facebookLogin() {
+    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+    // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
+    firebase.auth().signInWithRedirect(facebook);
+},
+githubLogin() {
+    firebase.auth().signInWithRedirect(github);
+},
+
+timer(str) {
+    document.querySelector(".loginrResult").innerText = str;
+    tmp = setTimeout(timerFunc, 3000);
+},
+timerFunc() {
+    document.querySelector(".loginrResult").innerText = "";
+},
+signOut() {
+    firebase.auth().signOut().then(() => {
+        console.log(`Sign-out successful`);
+    }).catch((error) => {
+        console.log(`Sign-out error`);
+    });
+},
+// firebase.auth().currentUser.uid
+
+
+
     },
 }
 
