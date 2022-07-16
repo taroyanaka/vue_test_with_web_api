@@ -1,14 +1,15 @@
 <template>
+<img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="anyLogin('google')" />
 <h2 class="my_user_uid"><span>uuid:</span>{{ my_user_uid }}</h2>
 <h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2>
 <button @click="check_login">check_login</button>
 <input type="button" name="" class="sign_out" value="sign_out" @click="sign_out">
 
-<input type="button" name="" class="login" value="googleLogin" @click="anyLogin('google')"> => google is localhost OK github pages OK
+<!-- <input type="button" name="" class="login" value="googleLogin" @click="anyLogin('google')"> => google is localhost OK github pages OK -->
 <!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
-<input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG
-<input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK
-<input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG
+<!-- <input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG -->
+<!-- <input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK -->
+<!-- <input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG -->
 
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
@@ -203,5 +204,9 @@ export default {
 }
 .update_invalid {
     display: none;
+}
+.login{
+    /* width: 100%; */
+    height: 2.5rem;
 }
 </style>
