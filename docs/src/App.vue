@@ -1,12 +1,14 @@
 <template>
-<h2 class="loginrResult"></h2>
+<h2 class="my_user_uid"><span>uuid:</span>{{ my_user_uid }}</h2>
+<h2 class="login_result">{{ login_result }}</h2>
 <button @click="checkLogin">checkLogin</button>
+<input type="button" name="" class="logout" value="logout" @click="signOut">
 
-<input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK
+<input type="button" name="" class="login" value="googleLogin" @click="anyLogin('google')"> => google is localhost OK github pages OK
+<!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
 <input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG
 <input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK
 <input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG
-<input type="button" name="" class="logout" value="logout" @click="signOut">
 
 <span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
@@ -82,10 +84,6 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const google = new firebase.auth.GoogleAuthProvider();
-const github = new firebase.auth.GithubAuthProvider();
-const twitter = new firebase.auth.TwitterAuthProvider();
-const facebook = new firebase.auth.FacebookAuthProvider();
 
 
 
@@ -116,6 +114,8 @@ export default {
             db_list: null,
             db_log: '',
             error_log: '',
+            my_user_uid: null,
+            login_result: null,
 // insert_validation_data: true,
             // validation_result: '',
         }
@@ -166,57 +166,28 @@ export default {
     update_validation_check(){
         return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
     },
-
-checkLogin() {
-    firebase.auth().onAuthStateChanged(function (user) {
-        if (user) {
-            document.querySelector(".loginrResult").innerText = "login success";
-            document.querySelectorAll(".login").forEach(V=>V.style = "display:none")
-            document.querySelector(".logout").style = "display:inline";
-        } else {
-            document.querySelector(".loginrResult").innerText = "not login yet";
-            document.querySelector(".logout").style = "display:none";
-            document.querySelectorAll(".login").forEach(V=>V.style = "display:inline")
-        }
-    })
-},
-
-googleLogin() {
-    firebase.auth().signInWithRedirect(google);
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
-},
-twitterLogin() {
+    async signOut() {
+        await firebase.auth().signOut();
+        this.login_result = (await firebase.auth().getUid()) ? "logout failed" : "logout success";
+    },
+    // firebase.auth().currentUser.uid
+    async checkLogin() {
+        await firebase.auth().onAuthStateChanged(async user => {
+            this.my_user_uid = (await user) ? user.uid : "public";
+            console.log(this.my_user_uid);
+        });
+    },
     // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
     // https://qiita.com/sl2/items/2815e62aaf2baea2f589
-    firebase.auth().signInWithRedirect(twitter);
-},
-facebookLogin() {
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
     // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-    firebase.auth().signInWithRedirect(facebook);
-},
-githubLogin() {
-    firebase.auth().signInWithRedirect(github);
-},
-
-timer(str) {
-    document.querySelector(".loginrResult").innerText = str;
-    tmp = setTimeout(timerFunc, 3000);
-},
-timerFunc() {
-    document.querySelector(".loginrResult").innerText = "";
-},
-signOut() {
-    firebase.auth().signOut().then(() => {
-        console.log(`Sign-out successful`);
-    }).catch((error) => {
-        console.log(`Sign-out error`);
-    });
-},
-// firebase.auth().currentUser.uid
-
-
-
+    anyLogin(service) {
+        switch (service) {
+            case "google": firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
+            case "github": firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
+            case "twitter": firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
+            case "facebook": firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
+        }
+    },
     },
 }
 
