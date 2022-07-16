@@ -1,8 +1,8 @@
 <template>
 <h2 class="my_user_uid"><span>uuid:</span>{{ my_user_uid }}</h2>
-<h2 class="login_result">{{ login_result }}</h2>
-<button @click="checkLogin">checkLogin</button>
-<input type="button" name="" class="logout" value="logout" @click="signOut">
+<h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2>
+<button @click="check_login">check_login</button>
+<input type="button" name="" class="sign_out" value="sign_out" @click="sign_out">
 
 <input type="button" name="" class="login" value="googleLogin" @click="anyLogin('google')"> => google is localhost OK github pages OK
 <!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
@@ -166,17 +166,6 @@ export default {
     update_validation_check(){
         return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
     },
-    async signOut() {
-        await firebase.auth().signOut();
-        this.login_result = (await firebase.auth().getUid()) ? "logout failed" : "logout success";
-    },
-    // firebase.auth().currentUser.uid
-    async checkLogin() {
-        await firebase.auth().onAuthStateChanged(async user => {
-            this.my_user_uid = (await user) ? user.uid : "public";
-            console.log(this.my_user_uid);
-        });
-    },
     // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
     // https://qiita.com/sl2/items/2815e62aaf2baea2f589
     // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
@@ -187,6 +176,16 @@ export default {
             case "twitter": firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
             case "facebook": firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
         }
+    },
+    async check_login() {
+        await firebase.auth().onAuthStateChanged(async user => {
+            this.my_user_uid = (await user) ? user.uid : "public";
+            this.login_result = (await user) ? "now login" : "now not login";
+        });
+    },
+    async sign_out() {
+        await firebase.auth().signOut();
+        await check_login();
     },
     },
 }
