@@ -1,11 +1,11 @@
 <template>
-<img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="anyLogin('google')" />
-<h2 class="my_user_uid"><span>uuid:</span>{{ my_user_uid }}</h2>
+<img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="any_login('google')" />
+<h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2>
 <h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2>
 <button @click="check_login">check_login</button>
 <input type="button" name="" class="sign_out" value="sign_out" @click="sign_out">
 
-<!-- <input type="button" name="" class="login" value="googleLogin" @click="anyLogin('google')"> => google is localhost OK github pages OK -->
+<!-- <input type="button" name="" class="login" value="googleLogin" @click="any_login('google')"> => google is localhost OK github pages OK -->
 <!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
 <!-- <input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG -->
 <!-- <input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK -->
@@ -115,7 +115,7 @@ export default {
             db_list: null,
             db_log: '',
             error_log: '',
-            my_user_uid: null,
+            my_uuid: null,
             login_result: null,
 // insert_validation_data: true,
             // validation_result: '',
@@ -170,7 +170,7 @@ export default {
     // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
     // https://qiita.com/sl2/items/2815e62aaf2baea2f589
     // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-    anyLogin(service) {
+    any_login(service) {
         switch (service) {
             case "google": firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
             case "github": firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
@@ -180,7 +180,7 @@ export default {
     },
     async check_login() {
         await firebase.auth().onAuthStateChanged(async user => {
-            this.my_user_uid = (await user) ? user.uid : "public";
+            this.my_uuid = (await user) ? user.uid : "public";
             this.login_result = (await user) ? "now login" : "now not login";
         });
     },
