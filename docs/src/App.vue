@@ -61,7 +61,6 @@
                             // (signout is toggleSignIn fn, then initApp fn)
 
 
-
 // fetch with authentication and validation test
 
 // should I do CSRF protection?
