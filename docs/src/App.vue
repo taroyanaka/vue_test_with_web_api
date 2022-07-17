@@ -52,6 +52,10 @@
     // => uid from firebase authentication
         // => https://gist.github.com/taroyanaka/1275ccf0f7adc549fcf01cdb19f2afd6
 
+            // I need to refactoring this code like this.
+            // => https://github.com/firebase/quickstart-js/blob/master/auth/google-redirect.html
+
+
 // fetch with authentication and validation test
 
 // should I do CSRF protection?
@@ -161,33 +165,36 @@ export default {
         async readall() {
             await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "db_list"], "data");
         },
-    insert_validation_check(){
-        return Array.from(document.querySelectorAll("input.insert")).map(V=>V.validity.valid).some(x=> x === false )
-    },
-    update_validation_check(){
-        return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
-    },
-    // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
-    // https://qiita.com/sl2/items/2815e62aaf2baea2f589
-    // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-    any_login(service) {
-        switch (service) {
-            case "google": firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
-            case "github": firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
-            case "twitter": firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
-            case "facebook": firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
-        }
-    },
-    async check_login() {
-        await firebase.auth().onAuthStateChanged(async user => {
-            this.my_uuid = (await user) ? user.uid : "public";
-            this.login_result = (await user) ? "now login" : "now not login";
-        });
-    },
-    async sign_out() {
-        await firebase.auth().signOut();
-        await check_login();
-    },
+insert_validation_check(){
+    return Array.from(document.querySelectorAll("input.insert")).map(V=>V.validity.valid).some(x=> x === false )
+},
+update_validation_check(){
+    return Array.from(document.querySelectorAll("input.update")).map(V=>V.validity.valid).some(x=> x === false )
+},
+// https://p2auth-ea50a.firebaseapp.com/__/auth/handler
+// https://qiita.com/sl2/items/2815e62aaf2baea2f589
+// https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
+async any_login(service) {
+    switch (service) {
+        case "google": await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
+        case "github": await firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
+        case "twitter": await firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
+        case "facebook": await firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
+    }
+    await check_login();
+
+
+},
+async check_login() {
+    await firebase.auth().onAuthStateChanged(async user => {
+        this.my_uuid = (await user) ? user.uid : "public";
+        this.login_result = (await user) ? "now login" : "now not login";
+    });
+},
+async sign_out() {
+    await firebase.auth().signOut();
+    await check_login();
+},
     },
 }
 
