@@ -58,7 +58,6 @@
                 // initApp fn, onload(vue mount?) : .getRedirectResult() =>
                     // toggleSignIn fn, onclick : .signInWithRedirect(provider) =>
                         // initApp fn, onload(vue mount?) : .getRedirectResult()
-                            // (signout is toggleSignIn fn, then initApp fn)
 
 
 // fetch with authentication and validation test
