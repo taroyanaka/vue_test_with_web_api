@@ -55,6 +55,12 @@
             // I need to refactoring this code like this.
             // => https://github.com/firebase/quickstart-js/blob/master/auth/google-redirect.html
 
+                // initApp fn, onload(vue mount?) : .getRedirectResult() =>
+                    // toggleSignIn fn, onclick : .signInWithRedirect(provider) =>
+                        // initApp fn, onload(vue mount?) : .getRedirectResult()
+                            // (signout is toggleSignIn fn, then initApp fn)
+
+
 
 // fetch with authentication and validation test
 
