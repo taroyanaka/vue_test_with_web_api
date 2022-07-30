@@ -1,9 +1,13 @@
 <template>
-<img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="any_login('google')" />
-<h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2>
-<h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2>
-<button @click="check_login">check_login</button>
-<input type="button" name="" class="sign_out" value="sign_out" @click="sign_out">
+<img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="toggleSignIn" />
+
+<button @click="debug">debug</button>
+<h1>{{ login_state }}</h1>
+
+<!-- <h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2> -->
+<!-- <h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2> -->
+<!-- <button @click="check_login">check_login</button> -->
+<!-- <input type="button" name="" class="sign_out" value="sign_out" @click="sign_out"> -->
 
 <!-- <input type="button" name="" class="login" value="googleLogin" @click="any_login('google')"> => google is localhost OK github pages OK -->
 <!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
@@ -21,6 +25,8 @@
 
 <h1>{{ foo_data }}</h1>
 
+<h1>{{ login_state }}</h1>
+
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
     <input type="text" v-model="item.info" :class="{ update: true, deleteid: true, info: true}" minlength="1" maxlength="30" required>
@@ -33,6 +39,10 @@
 </template>
 
 <script>
+// document.querySelector("#app").__vue_app__._component.methods.debug()
+
+
+
 // local node.js express.js server setup (with hot reloading)
 // => ☑️
 // server side fetch test
@@ -55,9 +65,9 @@
             // I need to refactoring this code like this.
             // => https://github.com/firebase/quickstart-js/blob/master/auth/google-redirect.html
 
-                // initApp fn, onload(vue mount?) : .getRedirectResult() =>
-                    // toggleSignIn fn, onclick : .signInWithRedirect(provider) =>
-                        // initApp fn, onload(vue mount?) : .getRedirectResult()
+                // initApp fn, onload(vue mount?) : .getRedirectResult() and .onAuthStateChanged() =>
+                    // toggleSignIn fn, onclick : .signInWithRedirect(provider) or .signOut() =>
+                        // initApp fn, onload(vue mount?) : .getRedirectResult() and .onAuthStateChanged()
 
 
 // fetch with authentication and validation test
@@ -93,7 +103,24 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+let displayName;
+let email;
+let emailVerified;
+let photoURL;
+let isAnonymous;
+let uid;
+let providerData;
+let token;
+let user;
+let errorCode;
+let errorMessage;
+let credential;
 
+
+
+// window.onload = function() {
+//     initApp();
+// };
 
 
 
@@ -107,6 +134,7 @@ firebase.initializeApp(firebaseConfig);
 //         }
 //     });
 // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
 
 
 
@@ -125,17 +153,30 @@ export default {
             error_log: '',
             my_uuid: null,
             login_result: null,
+            login_state: null,
 // insert_validation_data: true,
             // validation_result: '',
         }
     },
     // beforeMount(){
     // updated(){
-    mounted(){
-        document.querySelector(".insert_button_class_for_initial_display_none").style = 'display: none;'
+    async created(){
+        // await this.initApp();
     },
-    beforeUpdate(){
-        document.querySelector(".insert_button_class_for_initial_display_none").style = ''
+    async beforeMount(){
+        // await this.initApp();
+    },
+    async mounted(){
+        // document.querySelector(".insert_button_class_for_initial_display_none").style = 'display: none;'
+        await this.initApp();
+        await this.debug();
+    },
+    async beforeUpdate(){
+        // await this.debug();
+    },
+    async updated(){
+        await this.initApp();
+        // await this.debug();
 
     },
     methods: {
@@ -178,26 +219,158 @@ update_validation_check(){
 // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
 // https://qiita.com/sl2/items/2815e62aaf2baea2f589
 // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-async any_login(service) {
-    switch (service) {
-        case "google": await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
-        case "github": await firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
-        case "twitter": await firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
-        case "facebook": await firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
+// async any_login(service) {
+//     switch (service) {
+//         case "google": await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
+//         case "github": await firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
+//         case "twitter": await firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
+//         case "facebook": await firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
+//     }
+//     await check_login();
+
+
+// },
+// async check_login() {
+//     await firebase.auth().onAuthStateChanged(async user => {
+//         this.my_uuid = (await user) ? user.uid : "public";
+//         this.login_result = (await user) ? "now login" : "now not login";
+//     });
+// },
+// async sign_out() {
+//     await firebase.auth().signOut();
+//     await check_login();
+// },
+
+async debug(){
+
+    // user = await firebase.auth().onAuthStateChanged();
+    // if (user) {
+    //     displayName = user.displayName;
+    //     email = user.email;
+    //     emailVerified = user.emailVerified;
+    //     photoURL = user.photoURL;
+    //     isAnonymous = user.isAnonymous;
+    //     uid = user.uid;
+    //     providerData = user.providerData;
+    // } else {
+    // }
+
+    // vue.js and all of JS framework is suck, that make more problem than solve.
+    // https://stackoverflow.com/a/50313951
+    let SELF = this;
+
+    await firebase.auth().onAuthStateChanged(function(user) {
+    // res = user;
+    if (user) {
+            console.log("onAuthStateChanged is this????? in debug()");
+            // displayName = user.displayName;
+            // email = user.email;
+            // emailVerified = user.emailVerified;
+            // photoURL = user.photoURL;
+            // isAnonymous = user.isAnonymous;
+            // uid = user.uid;
+            // providerData = user.providerData;
+
+            // https://stackoverflow.com/a/50313951
+            // this.login_state = JSON.stringify([
+            SELF.login_state = JSON.stringify([
+                user.displayName,
+                user.email,
+                user.emailVerified,
+                user.photoURL,
+                user.isAnonymous,
+                user.uid,
+                user.providerData,
+            ]);
+            console.log(this.login_state);
+            // this.debug();
+            // this.login_state = JSON.stringify(displayName);
+            // this.check_login2(displayName);
+
+            // console.log(this.login_state);
+    } else {
     }
-    await check_login();
-
-
-},
-async check_login() {
-    await firebase.auth().onAuthStateChanged(async user => {
-        this.my_uuid = (await user) ? user.uid : "public";
-        this.login_result = (await user) ? "now login" : "now not login";
     });
+
+    const all_auth_val_array = await [displayName, email, emailVerified, photoURL, isAnonymous, uid, providerData, token, user, errorCode, errorMessage, credential];
+    await console.table(all_auth_val_array);
 },
-async sign_out() {
-    await firebase.auth().signOut();
-    await check_login();
+
+async toggleSignIn() {
+    if (!firebase.auth().currentUser) {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('https://www.googleapis.com/auth/plus.login');
+    firebase.auth().signInWithRedirect(provider);
+    } else {
+    firebase.auth().signOut();
+    }
+    //   document.getElementById('quickstart-sign-in').disabled = true;
+},
+async initApp() {
+    let res;
+    await firebase.auth().getRedirectResult().then(function(result) {
+        res = result;
+        console.log("getRedirectResult is this?????");
+    if (result.credential) {
+        token = result.credential.accessToken;
+    } else {
+    }
+        user = result.user;
+    }).catch(function(error) {
+        errorCode = error.code;
+        errorMessage = error.message;
+        email = error.email;
+        credential = error.credential;
+
+    console.log(
+errorCode,
+errorMessage,
+email,
+credential,
+);
+
+    if (errorCode === 'auth/account-exists-with-different-credential') {
+        alert('You have already signed up with a different auth provider for that email.');
+    } else {
+        console.error(error);
+    }
+    });
+
+
+    await console.log(res);
+
+    await firebase.auth().onAuthStateChanged(function(user) {
+    res = user;
+    if (user) {
+            console.log("onAuthStateChanged is this?????");
+            displayName = user.displayName;
+            email = user.email;
+            emailVerified = user.emailVerified;
+            photoURL = user.photoURL;
+            isAnonymous = user.isAnonymous;
+            uid = user.uid;
+            providerData = user.providerData;
+
+            this.login_state = [
+            user.displayName,
+            user.email,
+            user.emailVerified,
+            user.photoURL,
+            user.isAnonymous,
+            user.uid,
+            user.providerData,
+            ]
+            // this.debug();
+            // this.login_state = JSON.stringify(displayName);
+            // this.check_login2(displayName);
+
+            // console.log(this.login_state);
+    } else {
+    }
+    });
+
+    // this.login_state = await JSON.stringify(displayName);
+    await console.log(res);
 },
     },
 }
