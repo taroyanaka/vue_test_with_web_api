@@ -115,6 +115,7 @@ let user;
 let errorCode;
 let errorMessage;
 let credential;
+let res;
 
 
 
@@ -175,9 +176,8 @@ export default {
         // await this.debug();
     },
     async updated(){
-        await this.initApp();
-        // await this.debug();
-
+        // await this.initApp();
+        await this.debug();
     },
     methods: {
         async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
@@ -242,102 +242,56 @@ update_validation_check(){
 // },
 
 async debug(){
-
-    // user = await firebase.auth().onAuthStateChanged();
-    // if (user) {
-    //     displayName = user.displayName;
-    //     email = user.email;
-    //     emailVerified = user.emailVerified;
-    //     photoURL = user.photoURL;
-    //     isAnonymous = user.isAnonymous;
-    //     uid = user.uid;
-    //     providerData = user.providerData;
-    // } else {
-    // }
-
     // vue.js and all of JS framework is suck, that make more problem than solve.
     // https://stackoverflow.com/a/50313951
     let SELF = this;
-
-    await firebase.auth().onAuthStateChanged(function(user) {
-    // res = user;
-    if (user) {
-            console.log("onAuthStateChanged is this????? in debug()");
-            // displayName = user.displayName;
-            // email = user.email;
-            // emailVerified = user.emailVerified;
-            // photoURL = user.photoURL;
-            // isAnonymous = user.isAnonymous;
-            // uid = user.uid;
-            // providerData = user.providerData;
-
-            // https://stackoverflow.com/a/50313951
-            // this.login_state = JSON.stringify([
-            SELF.login_state = JSON.stringify([
-                user.displayName,
-                user.email,
-                user.emailVerified,
-                user.photoURL,
-                user.isAnonymous,
-                user.uid,
-                user.providerData,
-            ]);
-            console.log(this.login_state);
-            // this.debug();
-            // this.login_state = JSON.stringify(displayName);
-            // this.check_login2(displayName);
-
-            // console.log(this.login_state);
-    } else {
-    }
+    const set_to_global_value = (USER) => {
+        displayName = USER.displayName;
+        email = USER.email;
+        emailVerified = USER.emailVerified;
+        photoURL = USER.photoURL;
+        isAnonymous = USER.isAnonymous;
+        uid = USER.uid;
+        providerData = USER.providerData;
+    };
+    await firebase.auth().onAuthStateChanged((USER)=> {
+        if (USER) {
+                set_to_global_value(USER);
+                console.log("onAuthStateChanged is this????? in debug()");
+                // https://stackoverflow.com/a/50313951
+                SELF.login_state = JSON.stringify([
+                    USER.displayName,
+                    USER.email,
+                    USER.emailVerified,
+                    USER.photoURL,
+                    USER.isAnonymous,
+                    USER.uid,
+                    USER.providerData,
+                ]);
+                console.log(SELF.login_state);
+        }
     });
-
     const all_auth_val_array = await [displayName, email, emailVerified, photoURL, isAnonymous, uid, providerData, token, user, errorCode, errorMessage, credential];
     await console.table(all_auth_val_array);
 },
 
 async toggleSignIn() {
-    if (!firebase.auth().currentUser) {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/plus.login');
-    firebase.auth().signInWithRedirect(provider);
-    } else {
-    firebase.auth().signOut();
-    }
-    //   document.getElementById('quickstart-sign-in').disabled = true;
+    firebase.auth().currentUser ? firebase.auth().signOut() : firebase.auth().signInWithRedirect(provider);
 },
 async initApp() {
-    let res;
-    await firebase.auth().getRedirectResult().then(function(result) {
-        res = result;
-        console.log("getRedirectResult is this?????");
-    if (result.credential) {
-        token = result.credential.accessToken;
-    } else {
-    }
-        user = result.user;
-    }).catch(function(error) {
-        errorCode = error.code;
-        errorMessage = error.message;
-        email = error.email;
-        credential = error.credential;
-
-    console.log(
-errorCode,
-errorMessage,
-email,
-credential,
-);
-
-    if (errorCode === 'auth/account-exists-with-different-credential') {
-        alert('You have already signed up with a different auth provider for that email.');
-    } else {
-        console.error(error);
-    }
+    const show_error = (ERROR) => console.log([ERROR.code, ERROR.message, ERROR.email, ERROR.credential]);
+    await firebase.auth().getRedirectResult().then((RESULT) => {
+        res = RESULT;
+        console.log("getRedirectResult is this?????", res);
+        if (RESULT.credential) { token = RESULT.credential.accessToken }
+        user = RESULT.user;
+    }).catch((error) => {
+        show_error(error);
+        ERROR.code === 'auth/account-exists-with-different-credential' ? alert('You have already signed up with a different auth provider for that email.') : console.error(error);
     });
 
 
-    await console.log(res);
+    console.log(res);
 
     let SELF = this;
     await firebase.auth().onAuthStateChanged(function(user) {
