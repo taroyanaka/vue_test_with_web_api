@@ -3,45 +3,24 @@
 
 <button @click="debug">debug</button>
 
-<!-- <template v-for='(obj, key, index) in login_data'>
-    <div>{{key}} is {{obj[key]}}</div>
-</template> -->
 <ul>
-  <!-- <li v-for="value in login_data ? login_data : null"> -->
-  <!-- <li v-for="(value, key, index) in login_data ? login_data : null"> -->
   <li v-for="(value, key, index) in login_data">
-  <!-- <li v-for="(obj, key, index) in login_data"> -->
-    <!-- {{ value }} -->
     <div>{{key}} is: {{value}}</div>
   </li>
 </ul>
 
-<h1>login_result is: {{ login_result }}</h1>
+<!-- <h1>login_result is: {{ login_result }}</h1> -->
 <h1>now you are: {{ is_logging_in ? "loggin in" : "not loggin in" }}</h1>
 
 <h1>login_data is:{{ login_data }}</h1>
 <h1>login_error is: {{ login_error }}</h1>
 
-<!-- <h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2> -->
-<!-- <h2 class="login_result"><span>login_data:</span>{{ login_result }}</h2> -->
-<!-- <button @click="check_login">check_login</button> -->
-<!-- <input type="button" name="" class="sign_out" value="sign_out" @click="sign_out"> -->
-
-<!-- <input type="button" name="" class="login" value="googleLogin" @click="any_login('google')"> => google is localhost OK github pages OK -->
-<!-- <input type="button" name="" class="login" value="googleLogin" @click="googleLogin"> => google is localhost OK github pages OK -->
-<!-- <input type="button" name="" class="login" value="githubLogin" @click="githubLogin"> => github is localhost OK github pages NG -->
-<!-- <input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK -->
-<!-- <input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG -->
-
 <button @click="fetch_data">fetch_data</button>
-
 <input class="insert" type="text" v-model="info" minlength="1" maxlength="30" required>
-
 <button @click="insert" :class="{ insert_button_class_for_initial_display_none: true, insert_invalid: this.insert_validation_check()  }">insert</button>
 <button @click="readall">readall</button>
 
 <h1>{{ foo_data }}</h1>
-
 
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
@@ -75,23 +54,25 @@
     // => server-side use validatior.js https://github.com/validatorjs/validator.js/
     // => ☑️
 // fetch with authentication test
+
     // => uid from firebase authentication
         // => https://gist.github.com/taroyanaka/1275ccf0f7adc549fcf01cdb19f2afd6
-
+        // => ☑️
             // I need to refactoring this code like this.
             // => https://github.com/firebase/quickstart-js/blob/master/auth/google-redirect.html
-
+            // => ☑️
                 // initApp fn, onload(vue mount?) : .getRedirectResult() and .onAuthStateChanged() =>
                     // toggleSignIn fn, onclick : .signInWithRedirect(provider) or .signOut() =>
                         // initApp fn, onload(vue mount?) : .getRedirectResult() and .onAuthStateChanged()
+                        // => ☑️
 
+    // => what is refreshToken????
 
 // fetch with authentication and validation test
 
+
 // should I do CSRF protection?
 // https://garafu.blogspot.com/2017/04/nodejs-express-csrfprotection.html
-
-
 
 
 // validator.isLength(str [, options])
@@ -120,19 +101,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-let token;
-let user;
-let errorCode;
-let errorMessage;
-let credential;
-let res;
-
-// window.onload = function() {
-//     initApp();
-// };
-
-
-
 
 // firebase.auth().languageCode = 'ja';
 // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('sign-in-button', {
@@ -143,7 +111,6 @@ let res;
 //         }
 //     });
 // window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
-
 
 
 
@@ -207,19 +174,46 @@ export default {
             // this.foo_data = await tmp2["id"];
             await this.async_await_fetch_json_log_assign(SERVER_URL, ["foo_data"], "id");
         },
+        // async insert() {
+        //     await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.info), ["db_log", "db_list"], "data");
+        // },
+        // async deleteid(ID) {
+        //     await this.async_await_fetch_json_log_assign((SERVER_URL + "/deleteid?id=" + ID), ["db_log", "db_list"], "data");
+        // },
+        // async update(ID, INFO) {
+        //     await this.async_await_fetch_json_log_assign((SERVER_URL + "/update?id=" + ID + "&info=" + INFO), ["db_log", "db_list"], "data");
+        // },
+        // async readall() {
+        //     await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "db_list"], "data");
+        // },
+
+
         async insert() {
-            await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.info), ["db_log", "db_list"], "data");
+
+[
+"http://localhost:8800/readall_2",
+"http://localhost:8800/read_any_2?uuid=foo",
+"http://localhost:8800/update_2?lorem=fooooooooo&uuid=foo&id=1",
+"http://localhost:8800/deleteid_2?id=1&uuid=foo",
+"http://localhost:8800/insert_2?lorem=bowbowmeow",
+]
+
+
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert_2?lorem=" + this.lorem), ["db_log", "db_list"], "data");
             // await this.async_await_fetch_json_log_assign((SERVER_URL + "/insert?info=" + this.check_all_validation()), ["db_log", "db_list"], "data");
         },
-        async deleteid(ID) {
-            await this.async_await_fetch_json_log_assign((SERVER_URL + "/deleteid?id=" + ID), ["db_log", "db_list"], "data");
+        async deleteid(ID, UID) {
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/deleteid_2?id=" + ID + "&uuid=" + UID), ["db_log", "db_list"], "data");
         },
-        async update(ID, INFO) {
-            await this.async_await_fetch_json_log_assign((SERVER_URL + "/update?id=" + ID + "&info=" + INFO), ["db_log", "db_list"], "data");
+        async update(ID, LOREM, UID) {
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/update_2?id=" + ID + "&lorem=" + LOREM + "&uuid=" + UID), ["db_log", "db_list"], "data");
+            // await this.async_await_fetch_json_log_assign((SERVER_URL + "/update?id=" + ID + "&info=" + INFO), ["db_log", "db_list"], "data");
         },
         async readall() {
-            await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall"), ["db_log", "db_list"], "data");
+            await this.async_await_fetch_json_log_assign((SERVER_URL + "/readall_2"), ["db_log", "db_list"], "data");
         },
+
+
 insert_validation_check(){
     return Array.from(document.querySelectorAll("input.insert")).map(V=>V.validity.valid).some(x=> x === false )
 },
@@ -253,13 +247,13 @@ async toggleSignIn() {
 },
 async firebase_auth_getRedirectResult() {
     await firebase.auth().getRedirectResult().then((RESULT) => {
-        console.log("getRedirectResult is this?????", res);
+        console.log("getRedirectResult is this?????");
         this.login_result = RESULT;
         this.is_logging_in = RESULT["user"] === null ? false : true;
-    }).catch((error) => {
+    }).catch((ERROR) => {
         this.is_logging_in = false;
         this.login_error = ERROR;
-        ERROR.code === 'auth/account-exists-with-different-credential' ? alert('You have already signed up with a different auth provider for that email.') : console.error(error);
+        // ERROR.code === 'auth/account-exists-with-different-credential' ? alert('You have already signed up with a different auth provider for that email.') : console.error(error);
     });
 },
 async firebase_auth_onAuthStateChanged() {
@@ -295,7 +289,9 @@ async initApp() {
     },
 }
 
+
 </script>
+
 
 <style>
 #app {
