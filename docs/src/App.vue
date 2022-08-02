@@ -339,6 +339,7 @@ credential,
 
     await console.log(res);
 
+    let SELF = this;
     await firebase.auth().onAuthStateChanged(function(user) {
     res = user;
     if (user) {
@@ -351,14 +352,14 @@ credential,
             uid = user.uid;
             providerData = user.providerData;
 
-            this.login_state = [
-            user.displayName,
-            user.email,
-            user.emailVerified,
-            user.photoURL,
-            user.isAnonymous,
-            user.uid,
-            user.providerData,
+            SELF.login_state = [
+                user.displayName,
+                user.email,
+                user.emailVerified,
+                user.photoURL,
+                user.isAnonymous,
+                user.uid,
+                user.providerData,
             ]
             // this.debug();
             // this.login_state = JSON.stringify(displayName);
