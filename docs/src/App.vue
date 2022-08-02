@@ -2,12 +2,28 @@
 <img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="toggleSignIn" />
 
 <button @click="debug">debug</button>
-<h1>{{ login_result }}</h1>
-<h1>{{ login_state }}</h1>
-<h1>{{ login_error }}</h1>
+
+<!-- <template v-for='(obj, key, index) in login_data'>
+    <div>{{key}} is {{obj[key]}}</div>
+</template> -->
+<ul>
+  <!-- <li v-for="value in login_data ? login_data : null"> -->
+  <!-- <li v-for="(value, key, index) in login_data ? login_data : null"> -->
+  <li v-for="(value, key, index) in login_data">
+  <!-- <li v-for="(obj, key, index) in login_data"> -->
+    <!-- {{ value }} -->
+    <div>{{key}} is: {{value}}</div>
+  </li>
+</ul>
+
+<h1>login_result is: {{ login_result }}</h1>
+<h1>now you are: {{ is_logging_in ? "loggin in" : "not loggin in" }}</h1>
+
+<h1>login_data is:{{ login_data }}</h1>
+<h1>login_error is: {{ login_error }}</h1>
 
 <!-- <h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2> -->
-<!-- <h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2> -->
+<!-- <h2 class="login_result"><span>login_data:</span>{{ login_result }}</h2> -->
 <!-- <button @click="check_login">check_login</button> -->
 <!-- <input type="button" name="" class="sign_out" value="sign_out" @click="sign_out"> -->
 
@@ -17,7 +33,6 @@
 <!-- <input type="button" name="" class="login" value="twitterLogin" @click="twitterLogin"> => twitter is localhost OK github pages OK -->
 <!-- <input type="button" name="" class="login" value="facebookLogin" @click="facebookLogin"> => facebook is localhost OK github pages NG -->
 
-<span>{{ error_log }}</span>
 <button @click="fetch_data">fetch_data</button>
 
 <input class="insert" type="text" v-model="info" minlength="1" maxlength="30" required>
@@ -27,7 +42,6 @@
 
 <h1>{{ foo_data }}</h1>
 
-<!-- <h1>{{ login_state }}</h1> -->
 
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
@@ -145,10 +159,10 @@ export default {
             info: '',
             db_list: null,
             db_log: '',
-            error_log: '',
             my_uuid: null,
             login_result: null,
-            login_state: null,
+            is_logging_in: false,
+            login_data: null,
             login_error: null,
 // insert_validation_data: true,
             // validation_result: '',
@@ -172,7 +186,8 @@ export default {
     },
     async updated(){
         // await this.initApp();
-        await this.debug();
+        // await this.firebase_auth_onAuthStateChanged();
+        // await this.debug();
     },
     methods: {
         async async_await_fetch_json_log_assign(FETCH_PARAM, DATA_KEY_ARRAY, KEY) {
@@ -214,79 +229,68 @@ update_validation_check(){
 // https://p2auth-ea50a.firebaseapp.com/__/auth/handler
 // https://qiita.com/sl2/items/2815e62aaf2baea2f589
 // https://blog.katsubemakito.net/firebase/firebase-authentication-facebook-web1
-// async any_login(service) {
-//     switch (service) {
-//         case "google": await firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider()); break;
-//         case "github": await firebase.auth().signInWithRedirect(new firebase.auth.GithubAuthProvider()); break;
-//         case "twitter": await firebase.auth().signInWithRedirect(new firebase.auth.TwitterAuthProvider()); break;
-//         case "facebook": await firebase.auth().signInWithRedirect(new firebase.auth.FacebookAuthProvider()); break;
-//     }
-//     await check_login();
-
-
-// },
-// async check_login() {
-//     await firebase.auth().onAuthStateChanged(async user => {
-//         this.my_uuid = (await user) ? user.uid : "public";
-//         this.login_result = (await user) ? "now login" : "now not login";
-//     });
-// },
-// async sign_out() {
-//     await firebase.auth().signOut();
-//     await check_login();
-// },
-
 async debug(){
     // vue.js and all of JS framework is suck, that make more problem than solve.
     // https://stackoverflow.com/a/50313951
     // let SELF = this;
     console.log("onAuthStateChanged is this????? in debug()");
-    // await firebase_auth_onAuthStateChanged();
-    // await firebase.auth().onAuthStateChanged((USER)=> {
-    //     if (USER) {
-    //             set_to_global_value(USER);
-    //             SELF.login_state = JSON.stringify([
-    //                 USER.displayName,
-    //                 USER.email,
-    //                 USER.emailVerified,
-    //                 USER.photoURL,
-    //                 USER.isAnonymous,
-    //                 USER.uid,
-    //                 USER.providerData,
-    //             ]);
-    //             console.log(SELF.login_state);
-    //     }
-    // });
-    // const all_auth_val_array = [
-        // displayName, email, emailVerified, photoURL, isAnonymous, uid, providerData,
-        // token, user, errorCode, errorMessage, credential
-    // ];
-    await console.table([this.login_result, this.login_state, this.login_error]);
+    await console.table([this.login_result, this.login_data, this.login_error]);
 },
 
+async firebase_auth_signOut_and_all_login_property_clear() {
+    const all_login_property_clear = () => {
+        this.login_result = null;
+        this.is_logging_in = false;
+        this.login_data = null;
+        this.login_error = null;
+    };
+    await firebase.auth().signOut();
+    all_login_property_clear();
+},
 async toggleSignIn() {
-    firebase.auth().currentUser ? firebase.auth().signOut() : firebase.auth().signInWithRedirect((new firebase.auth.GoogleAuthProvider()));
+    // firebase.auth().currentUser ? firebase.auth().signOut() : firebase.auth().signInWithRedirect((new firebase.auth.GoogleAuthProvider()));
+    firebase.auth().currentUser ? this.firebase_auth_signOut_and_all_login_property_clear() : firebase.auth().signInWithRedirect((new firebase.auth.GoogleAuthProvider()));
 },
 async firebase_auth_getRedirectResult() {
     await firebase.auth().getRedirectResult().then((RESULT) => {
         console.log("getRedirectResult is this?????", res);
         this.login_result = RESULT;
+        this.is_logging_in = RESULT["user"] === null ? false : true;
     }).catch((error) => {
+        this.is_logging_in = false;
         this.login_error = ERROR;
         ERROR.code === 'auth/account-exists-with-different-credential' ? alert('You have already signed up with a different auth provider for that email.') : console.error(error);
     });
 },
 async firebase_auth_onAuthStateChanged() {
     let SELF = this;
+    const get_user_data_object = (USER) => {
+        const user_keys = [
+            // "refreshToken",
+            "uid",
+            "displayName",
+            // "photoURL",
+            // "email",
+            // "emailVerified",
+            // "phoneNumber",
+            // "isAnonymous",
+            // "tenantId",
+            // "metadata",
+            // "providerData",
+        ];
+        return R.fromPairs(
+            user_keys.map(KEY=>[KEY, USER[KEY]])
+        )
+    };
     await firebase.auth().onAuthStateChanged(USER => {
         console.log("onAuthStateChanged is this?????");
-        if (USER) { SELF.login_state = USER };
+        if (USER) { SELF.login_data = get_user_data_object(USER) };
+        if (USER) { SELF.is_logging_in = true };
     });
 },
 async initApp() {
     await this.firebase_auth_getRedirectResult();
     await this.firebase_auth_onAuthStateChanged();
-    // await console.log(res);
 },
     },
 }
