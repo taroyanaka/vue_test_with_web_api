@@ -2,7 +2,9 @@
 <img src="/google_signin_buttons/web/2x/btn_google_signin_light_normal_web@2x.png" class="login" value="googleLogin" @click="toggleSignIn" />
 
 <button @click="debug">debug</button>
+<h1>{{ login_result }}</h1>
 <h1>{{ login_state }}</h1>
+<h1>{{ login_error }}</h1>
 
 <!-- <h2 class="my_uuid"><span>uuid:</span>{{ my_uuid }}</h2> -->
 <!-- <h2 class="login_result"><span>login_state:</span>{{ login_result }}</h2> -->
@@ -25,7 +27,7 @@
 
 <h1>{{ foo_data }}</h1>
 
-<h1>{{ login_state }}</h1>
+<!-- <h1>{{ login_state }}</h1> -->
 
 <ul v-for="item in db_list">
     <li class="deleteid">{{ item.id }}:</li>
@@ -103,21 +105,13 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-let displayName;
-let email;
-let emailVerified;
-let photoURL;
-let isAnonymous;
-let uid;
-let providerData;
+
 let token;
 let user;
 let errorCode;
 let errorMessage;
 let credential;
 let res;
-
-
 
 // window.onload = function() {
 //     initApp();
@@ -155,6 +149,7 @@ export default {
             my_uuid: null,
             login_result: null,
             login_state: null,
+            login_error: null,
 // insert_validation_data: true,
             // validation_result: '',
         }
@@ -244,88 +239,54 @@ update_validation_check(){
 async debug(){
     // vue.js and all of JS framework is suck, that make more problem than solve.
     // https://stackoverflow.com/a/50313951
-    let SELF = this;
-    const set_to_global_value = (USER) => {
-        displayName = USER.displayName;
-        email = USER.email;
-        emailVerified = USER.emailVerified;
-        photoURL = USER.photoURL;
-        isAnonymous = USER.isAnonymous;
-        uid = USER.uid;
-        providerData = USER.providerData;
-    };
-    await firebase.auth().onAuthStateChanged((USER)=> {
-        if (USER) {
-                set_to_global_value(USER);
-                console.log("onAuthStateChanged is this????? in debug()");
-                // https://stackoverflow.com/a/50313951
-                SELF.login_state = JSON.stringify([
-                    USER.displayName,
-                    USER.email,
-                    USER.emailVerified,
-                    USER.photoURL,
-                    USER.isAnonymous,
-                    USER.uid,
-                    USER.providerData,
-                ]);
-                console.log(SELF.login_state);
-        }
-    });
-    const all_auth_val_array = await [displayName, email, emailVerified, photoURL, isAnonymous, uid, providerData, token, user, errorCode, errorMessage, credential];
-    await console.table(all_auth_val_array);
+    // let SELF = this;
+    console.log("onAuthStateChanged is this????? in debug()");
+    // await firebase_auth_onAuthStateChanged();
+    // await firebase.auth().onAuthStateChanged((USER)=> {
+    //     if (USER) {
+    //             set_to_global_value(USER);
+    //             SELF.login_state = JSON.stringify([
+    //                 USER.displayName,
+    //                 USER.email,
+    //                 USER.emailVerified,
+    //                 USER.photoURL,
+    //                 USER.isAnonymous,
+    //                 USER.uid,
+    //                 USER.providerData,
+    //             ]);
+    //             console.log(SELF.login_state);
+    //     }
+    // });
+    // const all_auth_val_array = [
+        // displayName, email, emailVerified, photoURL, isAnonymous, uid, providerData,
+        // token, user, errorCode, errorMessage, credential
+    // ];
+    await console.table([this.login_result, this.login_state, this.login_error]);
 },
 
 async toggleSignIn() {
-    firebase.auth().currentUser ? firebase.auth().signOut() : firebase.auth().signInWithRedirect(provider);
+    firebase.auth().currentUser ? firebase.auth().signOut() : firebase.auth().signInWithRedirect((new firebase.auth.GoogleAuthProvider()));
 },
-async initApp() {
-    const show_error = (ERROR) => console.log([ERROR.code, ERROR.message, ERROR.email, ERROR.credential]);
+async firebase_auth_getRedirectResult() {
     await firebase.auth().getRedirectResult().then((RESULT) => {
-        res = RESULT;
         console.log("getRedirectResult is this?????", res);
-        if (RESULT.credential) { token = RESULT.credential.accessToken }
-        user = RESULT.user;
+        this.login_result = RESULT;
     }).catch((error) => {
-        show_error(error);
+        this.login_error = ERROR;
         ERROR.code === 'auth/account-exists-with-different-credential' ? alert('You have already signed up with a different auth provider for that email.') : console.error(error);
     });
-
-
-    console.log(res);
-
+},
+async firebase_auth_onAuthStateChanged() {
     let SELF = this;
-    await firebase.auth().onAuthStateChanged(function(user) {
-    res = user;
-    if (user) {
-            console.log("onAuthStateChanged is this?????");
-            displayName = user.displayName;
-            email = user.email;
-            emailVerified = user.emailVerified;
-            photoURL = user.photoURL;
-            isAnonymous = user.isAnonymous;
-            uid = user.uid;
-            providerData = user.providerData;
-
-            SELF.login_state = [
-                user.displayName,
-                user.email,
-                user.emailVerified,
-                user.photoURL,
-                user.isAnonymous,
-                user.uid,
-                user.providerData,
-            ]
-            // this.debug();
-            // this.login_state = JSON.stringify(displayName);
-            // this.check_login2(displayName);
-
-            // console.log(this.login_state);
-    } else {
-    }
+    await firebase.auth().onAuthStateChanged(USER => {
+        console.log("onAuthStateChanged is this?????");
+        if (USER) { SELF.login_state = USER };
     });
-
-    // this.login_state = await JSON.stringify(displayName);
-    await console.log(res);
+},
+async initApp() {
+    await this.firebase_auth_getRedirectResult();
+    await this.firebase_auth_onAuthStateChanged();
+    // await console.log(res);
 },
     },
 }
