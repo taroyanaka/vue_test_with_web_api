@@ -4,6 +4,13 @@ import App from './App.vue'
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { initializeApp } from 'firebase/app';
 
+import { Application } from '@splinetool/runtime';
+
+const canvas = document.getElementById('canvas3d');
+const app = new Application(canvas);
+app.load('https://prod.spline.design/boBKUc6iZaWw0Vwa/scene.splinecode');
+
+
 // const firebaseConfig = {
 //     apiKey: "AIzaSyBcOlIDP2KWbJuKM0WeMHNp-WvjTVfLt9Y",
 //     authDomain: "p2auth-ea50a.firebaseapp.com",
